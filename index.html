@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="tr">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
@@ -47,27 +47,16 @@
     "react-dom/": "https://aistudiocdn.com/react-dom@^19.1.1/",
     "react": "https://aistudiocdn.com/react@^19.1.1",
     "react/": "https://aistudiocdn.com/react@^19.1.1/",
+    "vite": "https://aistudiocdn.com/vite@^7.1.7",
     "@vitejs/plugin-react": "https://aistudiocdn.com/@vitejs/plugin-react@^5.0.3",
     "path": "https://aistudiocdn.com/path@^0.12.7",
-    "vite": "https://aistudiocdn.com/vite@^7.1.7"
+    "vite-plugin-pwa": "https://aistudiocdn.com/vite-plugin-pwa@^1.0.3"
   }
 }
 </script>
-<link rel="stylesheet" href="/index.css">
 </head>
   <body class="bg-[#2c3e50]">
     <div id="root"></div>
-    <script>
-      if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-          navigator.serviceWorker.register('/sw.js').then(registration => {
-            console.log('ServiceWorker registration successful with scope: ', registration.scope);
-          }, err => {
-            console.log('ServiceWorker registration failed: ', err);
-          });
-        });
-      }
-    </script>
-  <script type="module" src="/index.tsx"></script>
-</body>
+    <script type="module" src="/index.tsx"></script>
+  </body>
 </html>

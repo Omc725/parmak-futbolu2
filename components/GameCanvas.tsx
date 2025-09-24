@@ -23,9 +23,9 @@ interface ConfettiParticle {
     opacity: number;
 }
 
-const DRAG = 0.998; // Air resistance factor
-const SPIN_DRAG = 0.97; // Spin decays faster
-const SPIN_FACTOR = 0.05; // How much paddle velocity translates to spin
+const DRAG = 0.998;
+const SPIN_DRAG = 0.97;
+const SPIN_FACTOR = 0.05;
 const PLAYER_SMOOTHING_FACTOR = 0.4;
 
 const GameCanvas: React.FC<GameCanvasProps> = ({
@@ -247,7 +247,7 @@ const GameCanvas: React.FC<GameCanvasProps> = ({
             const r = 255;
             const g = Math.max(0, Math.floor(255 - progress * 255));
             const b = 0;
-            ctx.fillStyle = `rgba(${r},${g},${b}, ${0.8 * (1-progress)})`;
+            ctx.fillStyle = `rgba(${r},${g},${b}, ${0.8 * (1 - progress)})`;
         } else {
             ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
         }
@@ -431,7 +431,7 @@ const GameCanvas: React.FC<GameCanvasProps> = ({
         playSound('goal');
         gs.goalShake = { side: 'top', progress: 1 };
         triggerConfetti(canvas.width / 2, 0);
-        ball.x = -1000; // Move ball offscreen
+        ball.x = -1000;
       } 
       else { ball.y = ball.radius; ball.vy *= -1; accelerateBallOnWallHit(); }
     }
@@ -441,7 +441,7 @@ const GameCanvas: React.FC<GameCanvasProps> = ({
         playSound('goal');
         gs.goalShake = { side: 'bottom', progress: 1 };
         triggerConfetti(canvas.width / 2, canvas.height);
-        ball.x = -1000; // Move ball offscreen
+        ball.x = -1000;
       }
       else { ball.y = canvas.height - ball.radius; ball.vy *= -1; accelerateBallOnWallHit(); }
     }

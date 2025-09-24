@@ -1,8 +1,8 @@
-import { Team, Fixture, MatchResult, LeagueTableRow, League, Tournament, TournamentNode } from '../types';
+import { Team, Fixture, MatchResult, LeagueTableRow, Tournament, TournamentNode } from '../types';
 
 /**
- * Simulates a single match between two AI teams.
- * @returns A MatchResult object with random scores.
+ * İki YZ takım arasındaki tek bir maçı simüle eder.
+ * @returns Rastgele skorlar içeren bir MatchResult nesnesi.
  */
 export const simulateMatch = (): MatchResult => {
     return {
@@ -12,23 +12,22 @@ export const simulateMatch = (): MatchResult => {
 };
 
 /**
- * Generates a round-robin fixture list for a league.
- * Each team plays every other team once.
+ * Bir lig için çift devreli bir fikstür listesi oluşturur.
+ * Her takım diğer her takımla hem evinde hem de deplasmanda oynar.
  */
 export const generateFixtures = (teams: Team[]): Fixture[] => {
     const fixtures: Fixture[] = [];
     if (teams.length < 2) return [];
 
-    // Make a mutable copy
     const scheduleTeams = [...teams];
 
-    // If odd number of teams, add a "bye" team
     if (scheduleTeams.length % 2 !== 0) {
         scheduleTeams.push({ name: 'BAY', abbr: 'BAY', color1: '', color2: '' });
     }
 
     const numRounds = scheduleTeams.length - 1;
     const numMatchesPerRound = scheduleTeams.length / 2;
+    const firstHalfFixtures: Fixture[] = [];
 
     for (let round = 0; round < numRounds; round++) {
         for (let match = 0; match < numMatchesPerRound; match++) {
@@ -36,27 +35,31 @@ export const generateFixtures = (teams: Team[]): Fixture[] => {
             const team2 = scheduleTeams[scheduleTeams.length - 1 - match];
             
             if (team1.name !== 'BAY' && team2.name !== 'BAY') {
-                 // Alternate home/away for fairness
                 if (match % 2 === 0) {
-                    fixtures.push({ round: round + 1, team1, team2 });
+                    firstHalfFixtures.push({ round: round + 1, team1, team2 });
                 } else {
-                    fixtures.push({ round: round + 1, team1: team2, team2: team1 });
+                    firstHalfFixtures.push({ round: round + 1, team1: team2, team2: team1 });
                 }
             }
         }
 
-        // Rotate teams for the next round
         const lastTeam = scheduleTeams.pop();
         if(lastTeam) {
             scheduleTeams.splice(1, 0, lastTeam);
         }
     }
 
-    return fixtures;
+    const secondHalfFixtures: Fixture[] = firstHalfFixtures.map(f => ({
+        round: f.round + numRounds,
+        team1: f.team2, // Ev sahibi ve deplasman takımlarını değiştir
+        team2: f.team1,
+    }));
+
+    return [...firstHalfFixtures, ...secondHalfFixtures];
 };
 
 /**
- * Calculates the league table from a list of teams and completed fixtures.
+ * Takım listesi ve tamamlanmış fikstürlerden lig tablosunu hesaplar.
  */
 export const calculateLeagueTable = (teams: Team[], fixtures: Fixture[]): LeagueTableRow[] => {
     const tableData: { [key: string]: LeagueTableRow } = teams.reduce((acc, team) => {
@@ -81,7 +84,6 @@ export const calculateLeagueTable = (teams: Team[], fixtures: Fixture[]): League
         const team2Stats = tableData[fixture.team2.abbr];
         const { team1Score, team2Score } = fixture.result;
 
-        // Update stats for both teams
         if (!team1Stats || !team2Stats) return;
 
         team1Stats.played++;
@@ -112,7 +114,6 @@ export const calculateLeagueTable = (teams: Team[], fixtures: Fixture[]): League
         row.goalDifference = row.goalsFor - row.goalsAgainst;
     });
 
-    // Sort the table
     tableArray.sort((a, b) => {
         if (a.points !== b.points) return b.points - a.points;
         if (a.goalDifference !== b.goalDifference) return b.goalDifference - a.goalDifference;
@@ -124,14 +125,12 @@ export const calculateLeagueTable = (teams: Team[], fixtures: Fixture[]): League
 };
 
 /**
- * Generates an 8-team knockout tournament bracket.
+ * 8 takımlı bir eleme usulü turnuva fikstürü oluşturur.
  */
 export const generateTournamentBracket = (teams: Team[], playerTeam: Team): Tournament => {
     const otherTeams = teams.filter(t => t.abbr !== playerTeam.abbr);
-    // Shuffle other teams and pick 7
     const shuffledOthers = [...otherTeams].sort(() => 0.5 - Math.random());
     const tournamentTeams = [playerTeam, ...shuffledOthers.slice(0, 7)];
-    // Shuffle the final 8 teams for seeding
     const finalShuffled = tournamentTeams.sort(() => 0.5 - Math.random());
 
     const quarterFinals: TournamentNode[] = [];
